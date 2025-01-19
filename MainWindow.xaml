@@ -1,0 +1,32 @@
+﻿<Window x:Class="AddressBook.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Address Book" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10">
+            <Button Content="Add Contact" Click="AddContact_Click" Width="100" Margin="0,0,10,0"/>
+            <Button Content="Edit Contact" Click="EditContact_Click" Width="100" Margin="0,0,10,0"/>
+            <Button Content="Delete Contact" Click="DeleteContact_Click" Width="100"/>
+        </StackPanel>
+        
+        <DataGrid x:Name="contactsGrid" 
+                  Grid.Row="1" 
+                  AutoGenerateColumns="False" 
+                  ItemsSource="{Binding Contacts}"
+                  SelectedItem="{Binding SelectedContact}"
+                  IsReadOnly="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="First Name" Binding="{Binding FirstName}"/>
+                <DataGridTextColumn Header="Last Name" Binding="{Binding LastName}"/>
+                <DataGridTextColumn Header="Email" Binding="{Binding Email}"/>
+                <DataGridTextColumn Header="Phone" Binding="{Binding PhoneNumber}"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Window>
+
