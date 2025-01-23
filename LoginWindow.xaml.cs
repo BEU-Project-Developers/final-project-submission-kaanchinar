@@ -33,7 +33,7 @@ public partial class LoginWindow : Window
 
     private void Register_Click(object sender, RoutedEventArgs e)
     {
-        var registerWindow = new RegisterWindow();
+        var registerWindow = new RegisterWindow(this);
         registerWindow.ShowDialog();
     }
 }

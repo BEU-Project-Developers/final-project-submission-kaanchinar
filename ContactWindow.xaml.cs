@@ -7,10 +7,12 @@ public partial class ContactWindow : Window
 {
     public Contact Contact { get; private set; }
 
-    public ContactWindow(Contact contact)
+    public ContactWindow(Contact contact, Window owner)
     {
         InitializeComponent();
         Contact = contact;
+        this.Owner = owner;
+        this.WindowStartupLocation = WindowStartupLocation.CenterOwner;
         LoadContact();
     }
 

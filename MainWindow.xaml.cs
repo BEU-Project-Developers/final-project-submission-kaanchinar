@@ -11,8 +11,10 @@ namespace AddressBook;
 public partial class MainWindow : Window
 {
     private readonly AddressBookContext _context;
+    public ObservableCollection<Group> Groups { get; set; }
+    public Group SelectedGroup { get; set; }
     private ObservableCollection<Contact> Contacts { get; set; }
-    private Contact SelectedContact { get; set; }
+    //private Contact SelectedContact { get; set; }
     private User CurrentUser { get; set; }
 
     public MainWindow()
@@ -29,6 +31,7 @@ public partial class MainWindow : Window
         CurrentUser = loginWindow.LoggedInUser;
         this.Title = $"Address Book - {CurrentUser.Username}";
         LoadContacts();
+        LoadGroups();
         DataContext = this;
     }
 
@@ -39,11 +42,20 @@ public partial class MainWindow : Window
         );
         contactsGrid.ItemsSource = Contacts;
     }
+    
+    private void LoadGroups()
+    {
+        Groups = new ObservableCollection<Group>(
+            // _context.Groups.Where(g => g.Contacts.Any(c => c.UserId == CurrentUser.Id)).ToList()
+            _context.Groups.ToList()
+        );
+        GroupsGrid.ItemsSource = Groups;
+    }
 
     private async void AddContact_Click(object sender, RoutedEventArgs e)
     {
         var contact = new Contact { UserId = CurrentUser.Id };
-        var contactWindow = new ContactWindow(contact);
+        var contactWindow = new ContactWindow(contact, this);
         if (contactWindow.ShowDialog() == true)
         {
             _context.Contacts.Add(contactWindow.Contact);
@@ -57,7 +69,7 @@ public partial class MainWindow : Window
         if (contactsGrid.SelectedItem == null) return;
 
         var contact = (Contact)contactsGrid.SelectedItem;
-        var contactWindow = new ContactWindow(contact);
+        var contactWindow = new ContactWindow(contact,this);
         if (contactWindow.ShowDialog() == true)
         {
             _context.Update(contactWindow.Contact);
@@ -79,6 +91,46 @@ public partial class MainWindow : Window
             _context.Contacts.Remove(contact);
             await _context.SaveChangesAsync();
             LoadContacts();
+        }
+    }
+
+    private async void AddGroup_Click(object sender, RoutedEventArgs e)
+    {
+        var group = new Group();
+        var groupWindow = new GroupWindow(group, Contacts, this);
+        if (groupWindow.ShowDialog() == true)
+        {
+            _context.Groups.Add(groupWindow.Group);
+            await _context.SaveChangesAsync();
+            LoadGroups();
+        }
+    }
+
+    private async void EditGroup_Click(object sender, RoutedEventArgs e)
+    {
+        if (SelectedGroup == null) return;
+
+        var groupWindow = new GroupWindow(SelectedGroup, Contacts,this);
+        if (groupWindow.ShowDialog() == true)
+        {
+            _context.Update(groupWindow.Group);
+            await _context.SaveChangesAsync();
+            LoadGroups();
+        }
+    }
+    
+    private async void DeleteGroup_Click(object sender, RoutedEventArgs e)
+    {
+        if (SelectedGroup == null) return;
+
+        var result = MessageBox.Show("Are you sure you want to delete this group?", 
+            "Confirm Delete", MessageBoxButton.YesNo);
+            
+        if (result == MessageBoxResult.Yes)
+        {
+            _context.Groups.Remove(SelectedGroup);
+            await _context.SaveChangesAsync();
+            LoadGroups();
         }
     }
 }

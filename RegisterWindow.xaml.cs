@@ -8,10 +8,12 @@ public partial class RegisterWindow : Window
 {
     private readonly AuthService _authService;
 
-    public RegisterWindow()
+    public RegisterWindow(Window owner)
     {
         InitializeComponent();
         _authService = new AuthService(new AddressBookContext());
+        this.Owner = owner;
+        this.WindowStartupLocation = WindowStartupLocation.CenterOwner;
     }
 
     private void Register_Click(object sender, RoutedEventArgs e)
